@@ -26,6 +26,18 @@
 		"keyVaultLinkedservice_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "@{concat('https://',linkedService().keyVaultName,'.vault.azure.net/')}"
+		},
+		"AzureMLService1_properties_typeProperties_subscriptionId": {
+			"type": "string",
+			"defaultValue": "237fc1e8-b322-408a-819a-690e834964f7"
+		},
+		"AzureMLService1_properties_typeProperties_resourceGroupName": {
+			"type": "string",
+			"defaultValue": "Synapse-poc-wba"
+		},
+		"anomalydetectorkeyvault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://synapsekeyvalut.vault.azure.net/"
 		}
 	},
 	"variables": {
@@ -1335,6 +1347,94 @@
 					"workspaceID": "f1891985-82c8-47df-b165-e259eef7ce19",
 					"tenantID": "72f988bf-86f1-41af-91ab-2d7cd011db47"
 				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureMLService1')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureMLService",
+				"typeProperties": {
+					"subscriptionId": "[parameters('AzureMLService1_properties_typeProperties_subscriptionId')]",
+					"resourceGroupName": "[parameters('AzureMLService1_properties_typeProperties_resourceGroupName')]",
+					"mlWorkspaceName": "ml-wba-test",
+					"authentication": "MSI"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/anomalydetectorkeyvault')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('anomalydetectorkeyvault_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/prepare_anomaly_detector_data')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"metadata": {
+					"language_info": {
+						"name": "python"
+					}
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"from pyspark.sql.functions import lit\n",
+							"\n",
+							"df = spark.createDataFrame([\n",
+							"    (\"1972-01-01T00:00:00Z\", 826.0),\n",
+							"    (\"1972-02-01T00:00:00Z\", 799.0),\n",
+							"    (\"1972-03-01T00:00:00Z\", 890.0),\n",
+							"    (\"1972-04-01T00:00:00Z\", 900.0),\n",
+							"    (\"1972-05-01T00:00:00Z\", 766.0),\n",
+							"    (\"1972-06-01T00:00:00Z\", 805.0),\n",
+							"    (\"1972-07-01T00:00:00Z\", 821.0),\n",
+							"    (\"1972-08-01T00:00:00Z\", 20000.0),\n",
+							"    (\"1972-09-01T00:00:00Z\", 883.0),\n",
+							"    (\"1972-10-01T00:00:00Z\", 898.0),\n",
+							"    (\"1972-11-01T00:00:00Z\", 957.0),\n",
+							"    (\"1972-12-01T00:00:00Z\", 924.0),\n",
+							"    (\"1973-01-01T00:00:00Z\", 881.0),\n",
+							"    (\"1973-02-01T00:00:00Z\", 837.0),\n",
+							"    (\"1973-03-01T00:00:00Z\", 9000.0)\n",
+							"], [\"timestamp\", \"value\"]).withColumn(\"group\", lit(\"series1\"))"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"df.write.mode(\"overwrite\").saveAsTable(\"anomaly_detector_testing_data\")"
+						],
+						"attachments": {},
+						"outputs": [],
+						"execution_count": null
+					}
+				]
 			},
 			"dependsOn": []
 		}

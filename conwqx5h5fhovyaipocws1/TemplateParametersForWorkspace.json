@@ -19,6 +19,15 @@
 		},
 		"keyVaultLinkedservice_properties_typeProperties_baseUrl": {
 			"value": "@{concat('https://',linkedService().keyVaultName,'.vault.azure.net/')}"
+		},
+		"AzureMLService1_properties_typeProperties_subscriptionId": {
+			"value": "237fc1e8-b322-408a-819a-690e834964f7"
+		},
+		"AzureMLService1_properties_typeProperties_resourceGroupName": {
+			"value": "Synapse-poc-wba"
+		},
+		"anomalydetectorkeyvault_properties_typeProperties_baseUrl": {
+			"value": "https://synapsekeyvalut.vault.azure.net/"
 		}
 	}
 }

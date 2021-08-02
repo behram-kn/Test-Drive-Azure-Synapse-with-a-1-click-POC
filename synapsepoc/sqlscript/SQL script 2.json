@@ -1,0 +1,17 @@
+{
+	"name": "SQL script 2",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP (100) [ID]\n,[name]\n,[description]\n,[version]\n,[created_time]\n,[created_by]\n,[framework]\n,[model]\n,[inputs_schema]\n,[outputs_schema]\n FROM [dbo].[ny_taxi_predict]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"poolName": "conwqx5h5fhovyaipocws1p1",
+				"databaseName": "conwqx5h5fhovyaipocws1p1"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
